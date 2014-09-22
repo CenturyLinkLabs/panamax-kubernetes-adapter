@@ -10,7 +10,7 @@ GEM
     backports (3.6.0)
     i18n (0.6.11)
     json (1.8.1)
-    kubr (0.0.4)
+    kubr (0.0.5)
       activesupport
       rest-client
     mime-types (2.3)
