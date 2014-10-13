@@ -1,62 +1,29 @@
-require 'app/models/service'
-
 module KubernetesAdapter
-  class Services < Sinatra::Application
+  module Routes
+    class Services < Base
 
-    before do
-      headers 'Content-Type' => 'application/json'
-    end
+      post '/services' do
+        services = Service.create_all(@payload)
+        entities = KubernetesModel.create_all(services)
+        entities.each(&:start)
 
-    before do
-      @payload = JSON.parse(request.body.read) rescue nil
-    end
-
-    error RestClient::ResourceNotFound do
-      status 404
-    end
-
-    post '/services' do
-      services = @payload.map do |service|
-        Service.create(service)
+        status 201
+        json entities.map { |entity| { id: entity.id } }
       end
 
-      result = services.map do |service|
-        { id: service.id }
+      get '/services/:id' do
+        entity = KubernetesModel.find(params[:id])
+        json({ id: entity.id, actualState: entity.status })
       end
 
-      status 201
-      json result
-    end
+      put '/services/:id' do
+        status 501
+      end
 
-    get '/services/:id' do
-      service = Service.find(params[:id])
-
-      result = {
-        id: service.id,
-        'actualState' => service.status
-      }
-
-      json result
-    end
-
-    put '/services/:id' do
-      service = Service.find(params[:id])
-
-      case @payload['desiredState']
-      when 'started'
-        service.start
+      delete '/services/:id' do
+        KubernetesModel.find(params[:id]).destroy
         status 204
-      when 'stopped'
-        service.stop
-        status 204
-      else
-        status 400
       end
-    end
-
-    delete '/services/:id' do
-      Service.find(params[:id]).destroy
-      status 204
     end
   end
 end
