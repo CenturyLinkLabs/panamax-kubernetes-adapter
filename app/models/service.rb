@@ -10,7 +10,7 @@ module KubernetesAdapter
       end
 
       def initialize(attrs={})
-        self.name = attrs[:name]
+        self.name = attrs[:name].try(:downcase)
         self.source = attrs[:source]
         self.command= attrs[:command]
         self.ports = attrs[:ports] || []
