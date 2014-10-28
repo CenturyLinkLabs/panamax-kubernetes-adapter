@@ -77,7 +77,7 @@ module KubernetesAdapter
       end
 
       def find_service(name)
-        services.find { |service| service.name == name }
+        services.find { |service| service.name.downcase == name.downcase }
       end
     end
   end
