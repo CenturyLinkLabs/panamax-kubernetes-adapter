@@ -2,6 +2,10 @@ module KubernetesAdapter
   module Routes
     class Base < Sinatra::Application
 
+      configure do
+        set show_exceptions: false
+      end
+
       before do
         headers 'Content-Type' => 'application/json'
       end
