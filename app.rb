@@ -9,6 +9,8 @@ $: << File.expand_path('../', __FILE__)
 
 Kubr.configure do |config|
   config.url = "#{ENV['KUBERNETES_API_ENDPOINT']}/api/v1beta1"
+  config.username = ENV['API_USERNAME']
+  config.password = ENV['API_PASSWORD']
 end
 
 # Require base
