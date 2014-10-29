@@ -69,6 +69,15 @@ describe KubernetesAdapter::Models::Service do
       it 'returns the deployment count' do
         expect(subject.scale).to eq count
       end
+
+      context 'when deployment count is a string' do
+
+        let(:count) { '10' }
+
+        it 'returns the deployment count as an integer' do
+          expect(subject.scale).to eq count.to_i
+        end
+      end
     end
 
     context 'when no deployment hash has been specified' do
