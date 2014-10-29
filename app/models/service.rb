@@ -21,7 +21,7 @@ module KubernetesAdapter
       end
 
       def scale
-        self.deployment.fetch(:count, 1)
+        self.deployment.fetch(:count, 1).to_i
       end
     end
   end
