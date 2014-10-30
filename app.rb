@@ -27,6 +27,7 @@ module KubernetesAdapter
       disable :static
     end
 
+    use KubernetesAdapter::Routes::Healthcheck
     use KubernetesAdapter::Routes::Services
   end
 end
