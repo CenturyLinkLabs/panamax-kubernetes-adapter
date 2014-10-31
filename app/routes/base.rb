@@ -8,6 +8,7 @@ module KubernetesAdapter
 
       before do
         headers 'Content-Type' => 'application/json'
+        headers 'X-Adapter-Version' => KubernetesAdapter::IMPL_VERSION
       end
 
       error RestClient::ResourceNotFound do

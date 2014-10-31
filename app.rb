@@ -21,6 +21,11 @@ require 'app/routes'
 require 'app/utils'
 
 module KubernetesAdapter
+
+  IMPL_VERSION = '0.1.0'
+  API_VERSION = 'v1'
+  TYPE = 'kubernetes'
+
   class App < Sinatra::Application
     configure do
       disable :method_override
@@ -28,6 +33,7 @@ module KubernetesAdapter
     end
 
     use KubernetesAdapter::Routes::Healthcheck
+    use KubernetesAdapter::Routes::Metadata
     use KubernetesAdapter::Routes::Services
   end
 end
