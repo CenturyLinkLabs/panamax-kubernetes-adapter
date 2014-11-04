@@ -21,7 +21,15 @@ module KubernetesAdapter
         kubr.create_replication_controller(to_hash)
       end
 
+      def stop
+        # stop controller by scaling it to zero
+        rc = kubr.get_replication_controller(id)
+        rc[:desiredState][:replicas] = 0
+        kubr.update_replication_controller(id, rc)
+      end
+
       def destroy
+        stop
         kubr.delete_replication_controller(id)
       end
 

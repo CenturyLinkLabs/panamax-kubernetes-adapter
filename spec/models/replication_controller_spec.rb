@@ -197,7 +197,35 @@ describe KubernetesAdapter::Models::ReplicationController do
     end
   end
 
+  context '#stop' do
+    let(:rc) { { desiredState: {} } }
+
+    before do
+      allow(client).to receive(:get_replication_controller).and_return(rc)
+      allow(client).to receive(:update_replication_controller)
+    end
+
+    it 'scales the replication controller to 0' do
+      expect(client).to receive(:update_replication_controller) do |id, rc|
+        expect(id).to eq attrs[:id]
+        expect(rc).to eq({ desiredState: { replicas: 0 } })
+      end
+
+      subject.stop
+    end
+  end
+
   context '#destroy' do
+    before do
+      allow(subject).to receive(:stop)
+      allow(client).to receive(:delete_replication_controller)
+    end
+
+    it 'stops the replication controller' do
+      expect(subject).to receive(:stop)
+      subject.destroy
+    end
+
     it 'invokes delete_replication_controller on the Kubr client' do
       expect(client).to receive(:delete_replication_controller).with(attrs[:id])
       subject.destroy
