@@ -39,6 +39,25 @@ describe KubernetesAdapter::Routes::Services do
       post '/v1/services', request_body
       expect(last_response.status).to eq 201
     end
+
+    context 'when an error occurs starting a service' do
+
+      before do
+        allow_any_instance_of(Pod).to receive(:start)
+          .and_raise(RestClient::Exception)
+      end
+
+      it 'does not blow-up the whole request' do
+        post '/v1/services', request_body
+        expect(last_response.status).to eq 201
+      end
+
+      it 'logs the exception' do
+        expect_any_instance_of(Logger).to receive(:error)
+        post '/v1/services', request_body
+      end
+    end
+
   end
 
   describe 'GET /services/:id' do

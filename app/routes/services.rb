@@ -13,7 +13,14 @@ module KubernetesAdapter
       post '/v1/services' do
         services = Service.create_all(@payload)
         entities = KubernetesModel.create_all(services)
-        entities.each(&:start)
+
+        entities.each do |entity|
+          begin
+            entity.start
+          rescue RestClient::Exception => ex
+            log_exception(ex)
+          end
+        end
 
         status 201
         json entities.map { |entity| { id: entity.id } }

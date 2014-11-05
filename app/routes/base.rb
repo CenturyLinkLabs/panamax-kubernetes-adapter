@@ -15,6 +15,11 @@ module KubernetesAdapter
         status 404
       end
 
+      def log_exception(ex)
+        log_message = "\n#{ex.class} (#{ex.message}):\n"
+        log_message << "  " << ex.backtrace.join("\n  ") << "\n\n"
+        logger.error(log_message)
+      end
     end
   end
 end
