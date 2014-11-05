@@ -36,3 +36,21 @@ describe KubernetesAdapter::SymbolExtensions do
     end
   end
 end
+
+describe KubernetesAdapter::StringExtensions do
+
+  using described_class
+
+  it 'adds a #sanitize method to strings' do
+    expect { String.new.sanitize }.to_not raise_error
+  end
+
+  describe '#sanitize' do
+
+    subject { 'FOO-1_1.2' }
+
+    it 'properly sanitizes the string for Kubernetes' do
+      expect(subject.sanitize).to eq 'foo-1-1-2'
+    end
+  end
+end

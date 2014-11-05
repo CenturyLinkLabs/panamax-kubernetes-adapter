@@ -2,6 +2,8 @@ module KubernetesAdapter
   module Models
     class Converter
 
+      using KubernetesAdapter::StringExtensions
+
       attr_reader :services
 
       def initialize(services=nil)
@@ -37,7 +39,7 @@ module KubernetesAdapter
 
       def k_service_from_link(linked_to_service, service_alias)
         k_service_from_service(linked_to_service).tap do |k_service|
-          k_service.id = service_alias.downcase.gsub(/_/, '-')
+          k_service.id = service_alias.sanitize
         end
       end
 

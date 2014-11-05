@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe KubernetesAdapter::Models::Converter do
 
-  let(:service_a) { Service.new(name: 'a') }
-  let(:service_b) { Service.new(name: 'b') }
+
+  let(:service_a) { Service.new(name: 'A_1') }
+  let(:service_b) { Service.new(name: 'B_1') }
 
   subject { described_class.new([service_a, service_b]) }
 
@@ -100,10 +101,12 @@ describe KubernetesAdapter::Models::Converter do
 
     context 'when there are linked services' do
 
+      using KubernetesAdapter::StringExtensions
+
       let(:service_alias) { 'SERVICE_ALIAS' }
 
       before do
-        service_a.links << { name: 'b', alias: service_alias }
+        service_a.links = [{ name: 'B_1', alias: service_alias }]
       end
 
       it 'returns a k_service for each linked service' do
@@ -113,7 +116,7 @@ describe KubernetesAdapter::Models::Converter do
         expect(k_services.count).to eq 1
         expect(k_services.first).to be_kind_of KService
         expect(k_services.first.name).to eq service_b.name
-        expect(k_services.first.id).to eq service_alias.downcase.gsub(/_/, '-')
+        expect(k_services.first.id).to eq service_alias.sanitize
       end
     end
   end

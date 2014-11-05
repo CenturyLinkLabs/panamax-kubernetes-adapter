@@ -16,7 +16,7 @@ module KubernetesAdapter
       end
 
       def id
-        @id || (name ? name.downcase.gsub(/_/, '-') : nil)
+        @id || name
       end
 
       def start

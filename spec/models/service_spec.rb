@@ -11,7 +11,7 @@ describe KubernetesAdapter::Models::Service do
       expose: [9090],
       environment: [{ variable: 'PASSWORD', value: 'password' }],
       volumes: [{ path: '/a/b' }],
-      links: [{ service: 'other', alias: 'db' }],
+      links: [{ name: 'other', alias: 'db' }],
       deployment: { count: 10 }
     }
   end
@@ -60,6 +60,33 @@ describe KubernetesAdapter::Models::Service do
         expect(service.links).to eq attrs[:links]
         expect(service.deployment).to eq attrs[:deployment]
       end
+    end
+  end
+
+  describe '#name' do
+
+    let(:name) { 'fOO-3.4_latest' }
+
+    subject { described_class.new(name: name) }
+
+    it 'sanitizes the service name' do
+      expect(subject.name).to eq 'foo-3-4-latest'
+    end
+  end
+
+  describe '#links' do
+
+    using KubernetesAdapter::StringExtensions
+
+    let(:link) { { name: 'fO_o', alias: 'db' } }
+
+    subject { described_class.new(links: [link]) }
+
+    it 'sanitizes the service name in the links' do
+      links = subject.links
+
+      expect(links.count).to eq 1
+      expect(links.first[:name]).to eq link[:name].sanitize
     end
   end
 

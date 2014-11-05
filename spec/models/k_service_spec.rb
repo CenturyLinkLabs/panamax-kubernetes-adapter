@@ -87,7 +87,7 @@ describe KubernetesAdapter::Models::KService do
       subject { described_class.new(name: name) }
 
       it 'returns an id generated from the name' do
-        expect(subject.id).to eq name.downcase.gsub(/_/, '-')
+        expect(subject.id).to eq name
       end
     end
 
