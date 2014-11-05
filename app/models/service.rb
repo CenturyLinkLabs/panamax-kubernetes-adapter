@@ -2,8 +2,8 @@ module KubernetesAdapter
   module Models
     class Service
 
-      attr_accessor :name, :source, :command, :ports, :environment, :volumes,
-        :links, :deployment
+      attr_accessor :name, :source, :command, :ports, :expose, :environment,
+        :volumes, :links, :deployment
 
       def self.create_all(attrs)
         attrs.map { |service_attrs| Service.new(service_attrs) }
@@ -14,6 +14,7 @@ module KubernetesAdapter
         self.source = attrs[:source]
         self.command= attrs[:command]
         self.ports = attrs[:ports] || []
+        self.expose = attrs[:expose] || []
         self.environment = attrs[:environment] || []
         self.volumes = attrs[:volumes] || []
         self.links = attrs[:links] || []

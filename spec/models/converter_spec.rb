@@ -57,20 +57,44 @@ describe KubernetesAdapter::Models::Converter do
 
       before do
         service_a.deployment = { count: 2 }
-        service_a.ports << { hostPort: 8000, containerPort: 80 }
       end
 
       subject { described_class.new([service_a, service_b]) }
 
-      it 'returns a k_service for each scaled service' do
-        k_services = subject.k_services
+      context 'when the service has a mapped port' do
 
-        expect(k_services).to be_kind_of Array
-        expect(k_services.count).to eq 1
-        expect(k_services.first).to be_kind_of KService
-        expect(k_services.first.name).to eq service_a.name
-        expect(k_services.first.port).to eq 8000
-        expect(k_services.first.container_port).to eq 80
+        before do
+          service_a.ports << { hostPort: 8000, containerPort: 80 }
+        end
+
+        it 'returns a k_service for each scaled service' do
+          k_services = subject.k_services
+
+          expect(k_services).to be_kind_of Array
+          expect(k_services.count).to eq 1
+          expect(k_services.first).to be_kind_of KService
+          expect(k_services.first.name).to eq service_a.name
+          expect(k_services.first.port).to eq 8000
+          expect(k_services.first.container_port).to eq 80
+        end
+      end
+
+      context 'when the service has an exposed port' do
+
+        before do
+          service_a.expose << 8888
+        end
+
+        it 'returns a k_service for each scaled service' do
+          k_services = subject.k_services
+
+          expect(k_services).to be_kind_of Array
+          expect(k_services.count).to eq 1
+          expect(k_services.first).to be_kind_of KService
+          expect(k_services.first.name).to eq service_a.name
+          expect(k_services.first.port).to eq 8888
+          expect(k_services.first.container_port).to eq nil
+        end
       end
     end
 

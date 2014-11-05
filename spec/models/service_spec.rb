@@ -8,6 +8,7 @@ describe KubernetesAdapter::Models::Service do
       source: 'bar',
       command: '/bin/bash',
       ports: [{ port: 8080 }],
+      expose: [9090],
       environment: [{ variable: 'PASSWORD', value: 'password' }],
       volumes: [{ path: '/a/b' }],
       links: [{ service: 'other', alias: 'db' }],
@@ -19,6 +20,7 @@ describe KubernetesAdapter::Models::Service do
   it { is_expected.to respond_to(:source) }
   it { is_expected.to respond_to(:command) }
   it { is_expected.to respond_to(:ports) }
+  it { is_expected.to respond_to(:expose) }
   it { is_expected.to respond_to(:environment) }
   it { is_expected.to respond_to(:volumes) }
   it { is_expected.to respond_to(:links) }
@@ -35,6 +37,7 @@ describe KubernetesAdapter::Models::Service do
         expect(service.source).to be_nil
         expect(service.command).to be_nil
         expect(service.ports).to eq []
+        expect(service.expose).to eq []
         expect(service.environment).to eq []
         expect(service.volumes).to eq []
         expect(service.links).to eq []
@@ -51,6 +54,7 @@ describe KubernetesAdapter::Models::Service do
         expect(service.source).to eq attrs[:source]
         expect(service.command).to eq attrs[:command]
         expect(service.ports).to eq attrs[:ports]
+        expect(service.expose).to eq attrs[:expose]
         expect(service.environment).to eq attrs[:environment]
         expect(service.volumes).to eq attrs[:volumes]
         expect(service.links).to eq attrs[:links]

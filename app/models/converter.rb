@@ -52,7 +52,9 @@ module KubernetesAdapter
           if service.ports.any?
             port = service.ports.first
             k_service.port = port[:hostPort]
-            k_service.container_port =  port[:containerPort]
+            k_service.container_port = port[:containerPort]
+          elsif service.expose.any?
+            k_service.port = service.expose.first
           end
         end
       end
