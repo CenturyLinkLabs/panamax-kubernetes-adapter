@@ -51,12 +51,9 @@ module KubernetesAdapter
 
       def k_service_from_service(service)
         KService.new(name: service.name).tap do |k_service|
-          if service.ports.any?
-            port = service.ports.first
+          unless (port = service.min_port).nil?
             k_service.port = port[:hostPort]
             k_service.container_port = port[:containerPort]
-          elsif service.expose.any?
-            k_service.port = service.expose.first
           end
         end
       end

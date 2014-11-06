@@ -83,6 +83,7 @@ describe KubernetesAdapter::Models::Converter do
       context 'when the service has an exposed port' do
 
         before do
+          service_a.expose << 8889
           service_a.expose << 8888
         end
 
@@ -94,7 +95,7 @@ describe KubernetesAdapter::Models::Converter do
           expect(k_services.first).to be_kind_of KService
           expect(k_services.first.name).to eq service_a.name
           expect(k_services.first.port).to eq 8888
-          expect(k_services.first.container_port).to eq nil
+          expect(k_services.first.container_port).to eq 8888
         end
       end
     end

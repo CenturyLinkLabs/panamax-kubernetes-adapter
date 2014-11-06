@@ -38,6 +38,22 @@ module KubernetesAdapter
         self.deployment.fetch(:count, 1).to_i
       end
 
+      def min_port
+        all_ports = []
+
+        all_ports += self.expose.map do |exposed_port|
+          { hostPort: exposed_port, containerPort: exposed_port }
+        end
+
+        all_ports += self.ports.map do |mapped_port|
+          {
+            hostPort: mapped_port[:hostPort] || mapped_port[:containerPort],
+            containerPort: mapped_port[:containerPort]
+          }
+        end
+
+        all_ports.sort_by { |port| port[:containerPort] }.first
+      end
     end
   end
 end

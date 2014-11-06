@@ -118,4 +118,51 @@ describe KubernetesAdapter::Models::Service do
     end
   end
 
+  describe '#min_port' do
+
+    subject { described_class.new(expose: expose, ports: ports) }
+
+    context 'when the min port is in the expose array' do
+
+      let(:expose) { [2, 1, 3] }
+      let(:ports) { [ { hostPort: 4, containerPort: 5 } ] }
+
+      it 'returns the lowest numbered port' do
+        expect(subject.min_port).to eq(hostPort: 1, containerPort: 1)
+      end
+    end
+
+    context 'when the min port is in the ports array' do
+
+      let(:expose) { [2, 5, 3] }
+
+      context 'when the hostPort has been set' do
+
+        let(:ports) { [ { hostPort: 4, containerPort: 1 } ] }
+
+        it 'returns the lowest numbered port' do
+          expect(subject.min_port).to eq(hostPort: 4, containerPort: 1)
+        end
+      end
+
+      context 'when the hostPort has NOT been set' do
+
+        let(:ports) { [ { containerPort: 1 } ] }
+
+        it 'returns the lowest numbered port' do
+          expect(subject.min_port).to eq(hostPort: 1, containerPort: 1)
+        end
+      end
+    end
+
+    context 'when there are no exposed or mapped ports' do
+
+      let(:expose) { [] }
+      let(:ports) { [] }
+
+      it 'returns nil' do
+        expect(subject.min_port).to be_nil
+      end
+    end
+  end
 end
