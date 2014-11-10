@@ -4,4 +4,4 @@
 
 # Panamax Kubernetes Adapter
 
-Interact with Kubernetes like a boss!
+The Kubernetes adapter in combination with the Panamax remote agent enables the deployment of a Panamax template to a Kubernetes cluster.
