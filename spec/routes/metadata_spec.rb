@@ -3,6 +3,7 @@ require 'spec_helper'
 describe KubernetesAdapter::Routes::Metadata do
 
   describe 'GET /metadata' do
+    before { stub_const('KubernetesAdapter::IMPL_VERSION', '0.1.0') }
 
     it 'returns version metadata' do
       expected = {
