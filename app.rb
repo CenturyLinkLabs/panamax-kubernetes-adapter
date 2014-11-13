@@ -22,7 +22,7 @@ require 'app/utils'
 
 module KubernetesAdapter
 
-  IMPL_VERSION = '0.1.0'
+  IMPL_VERSION = ENV['ADAPTER_VERSION']
   API_VERSION = 'v1'
   TYPE = 'kubernetes'
 
