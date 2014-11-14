@@ -3,16 +3,10 @@ require 'spec_helper'
 describe KubernetesAdapter::Routes::Metadata do
 
   describe 'GET /metadata' do
-    before { stub_const('KubernetesAdapter::IMPL_VERSION', '0.1.0') }
 
-    it 'returns version metadata' do
-      expected = {
-        version: KubernetesAdapter::IMPL_VERSION,
-        type: KubernetesAdapter::TYPE
-      }.to_json
-
-      get '/v1/metadata'
-      expect(last_response.body).to eq expected
+    before do
+      stub_const('KubernetesAdapter::IMPL_VERSION', '0.1.0')
+      allow_any_instance_of(Kubr::Client).to receive(:list_minions)
     end
 
     it 'has an application/json Content-Type' do
@@ -30,5 +24,39 @@ describe KubernetesAdapter::Routes::Metadata do
       get '/v1/metadata'
       expect(last_response.status).to eq 200
     end
+
+    context 'when Kubernetes is healthy' do
+
+      it 'returns metadata with a healthy status' do
+        expected = {
+          version: KubernetesAdapter::IMPL_VERSION,
+          type: KubernetesAdapter::TYPE,
+          isHealthy: true
+        }.to_json
+
+        get '/v1/metadata'
+        expect(last_response.body).to eq expected
+      end
+    end
+
+    context 'when Kubernetes is not healthy' do
+
+      before do
+        allow_any_instance_of(Kubr::Client).to receive(:list_minions)
+          .and_raise('boom')
+      end
+
+      it 'returns metadata with an un-healthy status' do
+        expected = {
+          version: KubernetesAdapter::IMPL_VERSION,
+          type: KubernetesAdapter::TYPE,
+          isHealthy: false
+        }.to_json
+
+        get '/v1/metadata'
+        expect(last_response.body).to eq expected
+      end
+    end
+
   end
 end
