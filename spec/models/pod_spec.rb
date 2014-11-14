@@ -190,7 +190,8 @@ describe KubernetesAdapter::Models::Pod do
   context '#refresh' do
 
     before do
-      allow(client).to receive(:get_pod).and_return({ currentState: {} })
+      allow(client).to receive(:get_pod).and_return(
+        { currentState: { status: 'Running' } })
     end
 
     it 'invokes get_pod on the Kubr client' do
@@ -198,43 +199,9 @@ describe KubernetesAdapter::Models::Pod do
       subject.refresh
     end
 
-    context "when pod status is 'Running'" do
-
-      before do
-        allow(client).to receive(:get_pod).and_return(
-          { currentState: { status: 'Running' } })
-      end
-
-      it "sets the status to 'started'" do
-        subject.refresh
-        expect(subject.status).to eq 'started'
-      end
-    end
-
-    context "when pod status is 'Waiting'" do
-
-      before do
-        allow(client).to receive(:get_pod).and_return(
-          { currentState: { status: 'Waiting' } })
-      end
-
-      it "sets the status to 'stopped'" do
-        subject.refresh
-        expect(subject.status).to eq 'stopped'
-      end
-    end
-
-    context "when pod status is something else" do
-
-      before do
-        allow(client).to receive(:get_pod).and_return(
-          { currentState: { status: 'Foo' } })
-      end
-
-      it "sets the status to 'error'" do
-        subject.refresh
-        expect(subject.status).to eq 'error'
-      end
+    it 'sets the status' do
+      subject.refresh
+      expect(subject.status).to eq 'Running'
     end
   end
 

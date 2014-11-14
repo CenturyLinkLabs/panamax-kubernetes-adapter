@@ -31,14 +31,7 @@ module KubernetesAdapter
 
       def refresh
         pod = kubr.get_pod(id)
-        @status = case pod[:currentState][:status]
-        when 'Running'
-          'started'
-        when 'Waiting'
-          'stopped'
-        else
-          'error'
-        end
+        @status = pod[:currentState][:status]
       end
 
       protected
