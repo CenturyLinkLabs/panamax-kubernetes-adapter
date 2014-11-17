@@ -45,16 +45,69 @@ describe KubernetesAdapter::Routes::Services do
       before do
         allow_any_instance_of(Pod).to receive(:start)
           .and_raise(RestClient::Exception)
+
+        allow_any_instance_of(Pod).to receive(:destroy)
       end
 
-      it 'does not blow-up the whole request' do
+      it 'returns a 500 response code' do
         post '/v1/services', request_body
-        expect(last_response.status).to eq 201
+        expect(last_response.status).to eq 500
+      end
+
+      it 'returns JSON message' do
+        post '/v1/services', request_body
+        expect(last_response.body).to eq({ message: 'RestClient::Exception' }.to_json)
       end
 
       it 'logs the exception' do
         expect_any_instance_of(Logger).to receive(:error)
         post '/v1/services', request_body
+      end
+    end
+
+    context 'when one of N services fails to start' do
+
+      let(:good_service) { double(:good_service) }
+      let(:bad_service) { double(:bad_service) }
+
+      before do
+        allow(good_service).to receive(:start)
+        allow(good_service).to receive(:destroy)
+        allow(bad_service).to receive(:start).and_raise(RestClient::Exception)
+        allow(KubernetesModel).to receive(:create_all)
+          .and_return([good_service, bad_service])
+      end
+
+      it 'cleans up the started services' do
+        expect(good_service).to receive(:destroy)
+        post '/v1/services', request_body
+      end
+
+      it 'does not clean up the failed services' do
+        expect(bad_service).to_not receive(:destroy)
+        post '/v1/services', request_body
+      end
+
+      it 'returns a 500 response code' do
+        post '/v1/services', request_body
+        expect(last_response.status).to eq 500
+      end
+
+      it 'returns JSON message' do
+        post '/v1/services', request_body
+        expect(last_response.body).to eq({ message: 'RestClient::Exception' }.to_json)
+      end
+
+      context 'when the error is a conflict' do
+
+        before do
+          allow(bad_service).to receive(:start).and_raise(RestClient::Conflict)
+        end
+
+        it 'returns a 409 response code' do
+          post '/v1/services', request_body
+          expect(last_response.status).to eq 409
+        end
       end
     end
 
