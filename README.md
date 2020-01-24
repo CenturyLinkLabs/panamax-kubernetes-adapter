@@ -1,3 +1,7 @@
+## NOTE
+
+This repo is no longer being maintained. Users are welcome to fork it, but we make no warranty of its functionality.
+
 ## *Warning!* This adapter has been replaced by [a Go version](https://github.com/CenturyLinkLabs/panamax-kubernetes-adapter-go)! This codebase is frozen.
 
 ![Panamax - Docker Management for Humans](http://panamax.ca.tier3.io/panamax_ui_wiki_screens/panamax_logo-title.png)
